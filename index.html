@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#071910">
+    <title>El árbol de los deseos | IUTIRLA Guayana</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            color-scheme: dark;
+            --night: #071910;
+            --paper: #fff8e9;
+            --gold: #f5cf77;
+            --muted: #b6c3b7;
+            --line: rgba(255, 248, 233, .16);
+        }
+
+        * { box-sizing: border-box; }
+        body {
+            min-width: 320px;
+            min-height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+            color: var(--paper);
+            background: radial-gradient(ellipse at 50% 43%, rgba(27, 81, 48, .43), transparent 42%), radial-gradient(ellipse at 50% 100%, rgba(98, 45, 25, .2), transparent 45%), var(--night);
+            font-family: "DM Sans", sans-serif;
+        }
+        body::before {
+            position: fixed;
+            z-index: -1;
+            inset: 0;
+            background-image: radial-gradient(rgba(255,255,255,.46) .7px, transparent .9px);
+            background-size: 49px 49px;
+            content: "";
+            opacity: .18;
+            pointer-events: none;
+        }
+        button { color: inherit; font: inherit; }
+        .app-shell { display: flex; width: min(100%, 1740px); min-height: 100vh; margin: 0 auto; padding: 22px clamp(18px, 4vw, 64px) 20px; flex-direction: column; }
+        .topbar { display: flex; min-height: 74px; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
+        .institution { display: flex; min-width: 0; align-items: center; gap: 15px; }
+        .institution img { display: block; width: clamp(280px, 27vw, 380px); height: auto; max-height: 92px; object-fit: contain; object-position: left center; }
+        .top-actions { display: flex; align-items: center; gap: 10px; }
+        .button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 9px; padding: 0 15px; border: 1px solid var(--line); border-radius: 5px; background: rgba(255,255,255,.045); color: var(--paper); cursor: pointer; font-size: 13px; font-weight: 600; transition: background .18s ease, border-color .18s ease, transform .18s ease; }
+        .button:hover { transform: translateY(-1px); border-color: rgba(245,207,119,.6); background: rgba(245,207,119,.1); }
+        .button:focus-visible, .ornament:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+        .button-primary { border-color: var(--gold); background: var(--gold); color: #192417; }
+        .button-primary:hover { background: #ffdf99; }
+        .button svg { width: 17px; height: 17px; flex: none; }
+        .file-input { display: none; }
+        main { display: flex; width: 100%; flex: 1; flex-direction: column; align-items: center; }
+        .intro { display: flex; width: 100%; min-height: 106px; align-items: end; justify-content: space-between; gap: 20px; padding: 19px 0 13px; }
+        .eyebrow { margin: 0 0 5px; color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+        h1 { margin: 0; font-family: "Playfair Display", Georgia, serif; font-size: clamp(30px, 4vw, 49px); font-weight: 600; line-height: 1.08; }
+        .intro-note { max-width: 310px; margin: 0 0 3px; color: var(--muted); font-size: 13px; line-height: 1.55; text-align: right; }
+        .tree-stage { position: relative; display: grid; width: 100%; min-height: 440px; flex: 1; place-items: center; overflow: hidden; }
+        .tree-aura { position: absolute; top: 48%; left: 50%; width: min(56vw, 690px); aspect-ratio: 1; transform: translate(-50%,-50%); border-radius: 50%; background: radial-gradient(circle, rgba(246,190,78,.095), rgba(34,99,53,.1) 37%, transparent 70%); pointer-events: none; }
+        #tree { position: relative; display: block; width: min(100%, 660px); height: auto; max-height: min(66vh, 820px); aspect-ratio: 440 / 560; overflow: visible; }
+        .branch-shadow { fill: #04100b; opacity: .5; }
+        .branch { stroke: rgba(173,215,150,.28); stroke-width: 1.5; }
+        .branch-edge { fill: none; stroke: rgba(200,232,176,.12); stroke-width: 2; }
+        .trunk { fill: #70462c; stroke: #a56e43; stroke-width: 2; }
+        .garland { fill: none; stroke: rgba(245,207,119,.7); stroke-linecap: round; stroke-width: 2; }
+        .garland-light { fill: #fff0b6; filter: url(#smallGlow); }
+        .star-shape { fill: #ffe391; filter: url(#starGlow); transform-box: fill-box; transform-origin: center; animation: star-pulse 3.5s ease-in-out infinite; }
+        .star-core { fill: #fffdf2; }
+        .ornament { cursor: pointer; transform-box: fill-box; transform-origin: center; animation: ornament-in .48s cubic-bezier(.2,.8,.2,1) both; }
+        .ornament:hover { filter: brightness(1.2); transform: scale(1.15); }
+        .ornament-glow { opacity: .24; filter: url(#ballGlow); }
+        .ornament-sprite { filter: drop-shadow(0 1.5px 2px rgba(0,0,0,.45)); pointer-events: none; }
+        .ornament-hanger { fill: #e8ca80; stroke: rgba(87,55,18,.72); stroke-width: .7; }
+        .tribute-star { cursor: pointer; }
+        .tribute-star:focus-visible circle, .tribute-star:hover circle { stroke: rgba(255,225,145,.9); stroke-width: 2; }
+        .empty-message { fill: rgba(255,248,233,.72); font: 500 15px "DM Sans", sans-serif; letter-spacing: .025em; text-anchor: middle; }
+        .tree-meta { display: flex; width: 100%; min-height: 77px; align-items: center; justify-content: space-between; gap: 24px; border-top: 1px solid var(--line); }
+        .counter-copy, .progress-wrap { display: flex; align-items: center; }
+        .counter-copy { gap: 13px; }
+        .counter-number { color: var(--gold); font-family: "Playfair Display", Georgia, serif; font-size: 32px; line-height: 1; }
+        .counter-label { color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .progress-wrap { width: min(32vw, 310px); gap: 12px; }
+        .progress-track { height: 4px; flex: 1; overflow: hidden; border-radius: 9px; background: rgba(255,255,255,.13); }
+        .progress-fill { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg,#77b66b,var(--gold)); transition: width .7s ease; }
+        .progress-label { min-width: 74px; color: var(--muted); font-size: 11px; text-align: right; }
+        .tree-meta-note { color: rgba(182,195,183,.75); font-size: 11px; }
+        .modal-backdrop { position: fixed; z-index: 10; display: grid; padding: 20px; background: rgba(2,9,5,.78); inset: 0; place-items: center; backdrop-filter: blur(8px); }
+        .modal-backdrop[hidden] { display: none; }
+        .message-modal { position: relative; width: min(100%,610px); padding: clamp(28px,5vw,55px); border: 1px solid rgba(245,207,119,.5); border-radius: 8px; background: radial-gradient(ellipse at 50% 0%,rgba(47,104,57,.35),transparent 65%),#102419; box-shadow: 0 24px 100px rgba(0,0,0,.5); text-align: center; animation: modal-in .25s ease both; }
+        .modal-star { margin-bottom: 16px; color: var(--gold); font-size: 28px; }
+        .modal-kicker { margin: 0 0 11px; color: var(--gold); font-size: 10px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; }
+        .message-modal h2 { margin: 0; font-family: "Playfair Display",Georgia,serif; font-size: clamp(24px,4vw,38px); font-weight: 600; }
+        .modal-career { margin: 8px 0 26px; color: var(--muted); font-size: 13px; }
+        .modal-message { margin: 0 0 26px; font-family: "Playfair Display",Georgia,serif; font-size: clamp(20px,3vw,29px); line-height: 1.5; overflow-wrap: anywhere; }
+        .modal-close { position: absolute; top: 13px; right: 13px; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; font-size: 21px; }
+        .toast { position: fixed; z-index: 20; right: 22px; bottom: 22px; max-width: min(420px,calc(100vw - 44px)); padding: 14px 18px; border: 1px solid var(--line); border-radius: 5px; background: #183523; box-shadow: 0 12px 35px rgba(0,0,0,.3); color: var(--paper); font-size: 13px; animation: modal-in .2s ease both; }
+        .management-dialog { position: relative; display: flex; width: min(100%, 860px); max-height: 88vh; padding: 28px; flex-direction: column; border: 1px solid rgba(245,207,119,.4); border-radius: 8px; background: #102419; box-shadow: 0 24px 100px rgba(0,0,0,.5); }
+        .management-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 42px 18px 0; border-bottom: 1px solid var(--line); }
+        .management-header h2 { margin: 0; font-family: "Playfair Display",Georgia,serif; font-size: 28px; font-weight: 600; }
+        .management-count { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
+        .management-toolbar { display: flex; gap: 8px; }
+        .button-danger { border-color: rgba(239,120,105,.45); color: #ffb1a5; }
+        .button-danger:hover { border-color: #ff8b7d; background: rgba(189,55,45,.16); }
+        .management-note { margin: 13px 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
+        .management-list { min-height: 0; overflow: auto; }
+        .management-empty { padding: 28px 12px; color: var(--muted); text-align: center; }
+        .management-row { padding: 16px 0; border-bottom: 1px solid var(--line); }
+        .management-row-content { display: flex; align-items: start; justify-content: space-between; gap: 20px; }
+        .management-row h3 { margin: 0; color: var(--gold); font-size: 15px; }
+        .management-row-meta { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+        .management-row-text { margin: 9px 0 0; color: var(--paper); font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; }
+        .management-actions { display: flex; flex: none; gap: 7px; }
+        .management-actions .button { min-height: 34px; padding: 0 10px; font-size: 11px; }
+        .management-form { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; padding-top: 15px; }
+        .management-field { display: flex; min-width: 0; flex-direction: column; gap: 6px; color: var(--muted); font-size: 11px; }
+        .management-field input, .management-field textarea { width: 100%; min-height: 40px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 4px; background: rgba(0,0,0,.2); color: var(--paper); font: inherit; font-size: 13px; }
+        .management-field textarea { min-height: 68px; resize: vertical; }
+        .management-field-message { grid-column: 1 / -1; }
+        .management-form-actions { display: flex; grid-column: 1 / -1; justify-content: end; gap: 8px; }
+        .presentation .top-actions, .presentation .intro-note, .presentation .tree-meta-note { display: none; }
+        .presentation .app-shell { padding-top: 10px; }
+        .presentation .intro { min-height: 93px; }
+        .presentation h1 { font-size: clamp(42px,5vw,68px); }
+        .presentation .tree-stage { min-height: 0; }
+        .presentation #tree { max-height: min(76vh,850px); }
+        .presentation .tree-meta { min-height: 64px; }
+        @keyframes star-pulse { 50% { opacity: .78; transform: scale(.94); } }
+        @keyframes ornament-in { from { opacity: 0; transform: scale(.25); } to { opacity: 1; transform: scale(1); } }
+        @keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @media (min-width: 1500px) and (min-height: 850px) { .app-shell { padding-top: 30px; } .tree-stage { min-height: 560px; } #tree { max-height: min(66vh, 900px); } }
+        @media (max-width: 760px) {
+            .app-shell { min-height: 100svh; padding: 12px 17px; }
+            .topbar { min-height: 62px; gap: 10px; }
+            .institution { gap: 9px; }
+            .institution img { width: clamp(190px, 34vw, 260px); max-height: 74px; }
+            .top-actions { gap: 6px; }
+            .button { min-height: 38px; padding: 0 10px; font-size: 11px; }
+            .button svg { width: 15px; height: 15px; }
+            .button-label { display: none; }
+            .intro { min-height: 93px; padding: 18px 0 12px; }
+            .intro-note { max-width: 150px; font-size: 11px; }
+            h1 { font-size: clamp(28px,7vw,38px); }
+            .tree-stage { min-height: 440px; max-height: 64vh; }
+            #tree { width: min(100%,560px); }
+            .tree-meta { min-height: 68px; gap: 12px; }
+            .counter-number { font-size: 27px; }
+            .counter-label { font-size: 10px; }
+            .progress-wrap { width: 38vw; gap: 7px; }
+            .progress-label { min-width: 59px; font-size: 10px; }
+            .tree-meta-note { display: none; }
+            .presentation .top-actions, .presentation .intro-note { display: none; }
+            .presentation .intro { min-height: 82px; }
+            .presentation h1 { font-size: 42px; }
+            .presentation .tree-stage { max-height: none; flex: 1; }
+            .presentation #tree { max-height: 74svh; }
+        }
+        @media (max-width: 430px) {
+            .institution img { width: clamp(180px, 62vw, 220px); max-height: 64px; }
+            .top-actions { gap: 4px; }
+            .top-actions .button { padding: 0 7px; }
+            .tree-stage { min-height: 400px; }
+            .intro-note { max-width: 120px; font-size: 10px; }
+            .progress-wrap { width: 34vw; }
+            .counter-copy { gap: 8px; }
+            .management-dialog { padding: 22px 16px; }
+            .management-header { align-items: start; flex-direction: column; }
+            .management-header h2 { font-size: 24px; }
+            .management-row-content { flex-direction: column; gap: 10px; }
+            .management-form { grid-template-columns: 1fr; }
+            .management-field-message, .management-form-actions { grid-column: auto; }
+        }
+        @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+    </style>
+</head>
+<body>
+    <div class="app-shell" id="app">
+        <header class="topbar">
+            <div class="institution">
+                <img src="iutirla.png" alt="IUTIRLA, Extensión Guayana">
+            </div>
+            <nav class="top-actions" aria-label="Herramientas de presentación">
+                <button class="button" id="manageButton" type="button" title="Administrar mensajes" aria-label="Administrar mensajes">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg><span class="button-label">Administrar</span>
+                </button>
+                <button class="button button-primary" id="presentationButton" type="button" title="Activar pantalla completa" aria-label="Activar pantalla completa">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/></svg><span class="button-label">Presentación</span>
+                </button>
+            </nav>
+        </header>
+        <main>
+            <section class="intro" aria-labelledby="pageTitle">
+                <div><p class="eyebrow">Una luz por cada deseo</p><h1 id="pageTitle">El árbol de los deseos</h1></div>
+                <p class="intro-note">Cada mensaje que compartimos hace brillar un poco más nuestra comunidad.</p>
+            </section>
+            <section class="tree-stage" aria-label="Árbol navideño interactivo">
+                <div class="tree-aura" aria-hidden="true"></div>
+                    <svg id="tree" viewBox="100 0 440 560" role="group" aria-label="Árbol navideño con adornos interactivos">
+                    <defs>
+                        <linearGradient id="foliage" x1="0" x2="1" y1="0" y2="1"><stop offset="0" stop-color="#367a4b"/><stop offset=".46" stop-color="#1c5835"/><stop offset="1" stop-color="#103923"/></linearGradient>
+                        <linearGradient id="foliageDeep" x1="0" x2=".8" y1="0" y2="1"><stop offset="0" stop-color="#225d39"/><stop offset="1" stop-color="#0c2e1d"/></linearGradient>
+                        <radialGradient id="ballGold" cx="29%" cy="22%" r="82%"><stop offset="0" stop-color="#fffdf0"/><stop offset=".18" stop-color="#ffe694"/><stop offset=".52" stop-color="#e4a633"/><stop offset=".82" stop-color="#a45415"/><stop offset="1" stop-color="#55270e"/></radialGradient>
+                        <radialGradient id="ballRed" cx="29%" cy="22%" r="82%"><stop offset="0" stop-color="#fff2df"/><stop offset=".2" stop-color="#ff9d7c"/><stop offset=".53" stop-color="#cf392d"/><stop offset=".84" stop-color="#86151d"/><stop offset="1" stop-color="#400d14"/></radialGradient>
+                        <filter id="ballGlow" x="-220%" y="-220%" width="540%" height="540%"><feGaussianBlur stdDeviation="5"/></filter>
+                        <filter id="smallGlow" x="-500%" y="-500%" width="1100%" height="1100%"><feGaussianBlur stdDeviation="2"/></filter>
+                        <filter id="starGlow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+                    </defs>
+                    <image href="arbol-base-transparente.png" x="122" y="0" width="396" height="560" preserveAspectRatio="none" aria-hidden="true"/>
+                    <g id="tributeStar" class="tribute-star" tabindex="0" role="button" aria-label="Abrir homenaje a Mireya Aguilera">
+                        <circle cx="320" cy="67" r="28" fill="transparent" pointer-events="all"/>
+                        <title>Homenaje de apertura a Mireya Aguilera</title>
+                    </g>
+                    <g id="ornaments" aria-label="Mensajes del árbol"></g>
+                    <text id="emptyMessage" class="empty-message" x="320" y="539">Prueba las esferas roja y dorada</text>
+                </svg>
+            </section>
+            <footer class="tree-meta">
+                <div class="counter-copy" aria-live="polite"><span class="counter-number" id="messageCount">0</span><span class="counter-label">deseos<br>compartidos</span></div>
+                <div class="progress-wrap" aria-label="Progreso del árbol"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0 de 100 luces</span></div>
+                <span class="tree-meta-note">Selecciona una esfera para leer el deseo</span>
+            </footer>
+        </main>
+    </div>
+    <div class="modal-backdrop" id="messageBackdrop" hidden>
+        <article class="message-modal" role="dialog" aria-modal="true" aria-labelledby="modalName">
+            <button class="modal-close" id="closeModal" type="button" aria-label="Cerrar mensaje">×</button>
+            <div class="modal-star" aria-hidden="true">✳</div><p class="modal-kicker" id="modalKicker">Un deseo para nuestra comunidad</p>
+            <h2 id="modalName"></h2><p class="modal-career" id="modalCareer"></p><p class="modal-message" id="modalText"></p>
+            <button class="button" id="modalDone" type="button">Volver al árbol</button>
+        </article>
+    </div>
+    <div class="modal-backdrop" id="managementBackdrop" hidden>
+        <section class="management-dialog" role="dialog" aria-modal="true" aria-labelledby="managementTitle">
+            <button class="modal-close" id="closeManagement" type="button" aria-label="Cerrar administración">×</button>
+            <header class="management-header">
+                <div><h2 id="managementTitle">Administrar mensajes</h2><p class="management-count" id="managementCount"></p></div>
+                <div class="management-toolbar">
+                    <button class="button" id="exportButton" type="button">Descargar respaldo CSV</button>
+                    <button class="button button-danger" id="clearMessages" type="button">Vaciar árbol</button>
+                </div>
+            </header>
+            <p class="management-note">Registro local de pruebas. El CSV incluye cédulas o IDs; guárdalo de forma privada. Vaciar el árbol elimina los mensajes de este navegador.</p>
+            <div class="management-list" id="managementList"></div>
+        </section>
+    </div>
+    <div class="toast" id="toast" role="status" hidden></div>
+    <script>
+        const CAPACITY = 100;
+        const STORAGE_KEY = "iutirla-arbol-deseos-v1";
+        const colors = ["ballRed", "ballGold"];
+        const TREE_PROFILE = [
+            [.12, 633, 726], [.16, 636, 741], [.20, 588, 798], [.25, 531, 894],
+            [.30, 501, 936], [.40, 402, 993], [.50, 321, 1095], [.60, 240, 1152],
+            [.70, 138, 1257], [.80, 156, 1290], [.88, 186, 1191],
+        ];
+        const TREE_ROWS = [[.20, 3], [.275, 5], [.35, 7], [.425, 9], [.50, 10], [.575, 12], [.65, 14], [.725, 15], [.80, 15], [.875, 10]];
+        const RESTRICTED_TERMS = [
+            "bastardo", "cabron", "carajo", "chingar", "cojones", "culero",
+            "estupido", "fuck", "hijueputa", "imbecil", "idiota", "joder",
+            "malparido", "mamaguevo", "marica", "maricon", "mierda", "pendejo",
+            "perra", "puta", "puto", "shit", "verga",
+        ];
+        const restrictedPattern = new RegExp(
+            `(^|[^a-z0-9])(?:${RESTRICTED_TERMS.map(term => term.split("").join("[^a-z0-9]*")).join("|")})(?:$|[^a-z0-9])`,
+        );
+        const svgNamespace = "http://www.w3.org/2000/svg";
+        const ornamentsGroup = document.getElementById("ornaments");
+        const tree = document.getElementById("tree");
+        const messages = loadSavedMessages();
+        let toastTimer;
+        let editingIndex = null;
+
+        function isValidMessage(message) {
+            return message && typeof message.name === "string" && typeof message.career === "string" && typeof message.text === "string";
+        }
+        function loadSavedMessages() {
+            try {
+                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+                return Array.isArray(saved) ? saved.filter(isValidMessage).slice(0, CAPACITY) : [];
+            } catch { return []; }
+        }
+        function normalized(value) { return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase(); }
+        function hasRestrictedLanguage(value) {
+            return restrictedPattern.test(normalized(value).replace(/[013457@$]/g, character => ({ "0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "@": "a", "$": "s" })[character]));
+        }
+        function identity(message) {
+            return normalized(message.participantId || message.id || message.name).replace(/[^a-z0-9]/g, "");
+        }
+        function saveMessages() { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); }
+        function svgElement(name, attributes = {}) {
+            const element = document.createElementNS(svgNamespace, name);
+            Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
+            return element;
+        }
+        function makeTreeSlots() {
+            const rows = TREE_ROWS.map(([height, count], rowIndex) => {
+                const upper = Math.max(1, TREE_PROFILE.findIndex(point => point[0] >= height));
+                const from = TREE_PROFILE[upper - 1];
+                const to = TREE_PROFILE[upper];
+                const ratio = (height - from[0]) / (to[0] - from[0]);
+                const left = from[1] + (to[1] - from[1]) * ratio;
+                const right = from[2] + (to[2] - from[2]) * ratio;
+                return Array.from({ length: count }, (_, column) => {
+                    const position = column % 2 === 0
+                        ? (rowIndex % 2 === 0 ? column / 2 : count - 1 - column / 2)
+                        : (rowIndex % 2 === 0 ? count - 1 - Math.floor(column / 2) : Math.floor(column / 2));
+                    const progress = count === 1 ? .5 : position / (count - 1);
+                    const sourceX = left + (right - left) * (.16 + progress * .68);
+                    const sag = Math.pow(Math.abs(progress * 2 - 1), 1.5) * 32;
+                    return { x: 122 + sourceX * 396 / 1414, y: (height * 2000 + sag) * 560 / 2000 };
+                });
+            });
+            const slots = [];
+            for (let column = 0; slots.length < CAPACITY; column += 1) {
+                rows.forEach(row => { if (row[column]) slots.push(row[column]); });
+            }
+            return slots;
+        }
+        const treeSlots = makeTreeSlots();
+        function slotFor(index) { return treeSlots[index] || { x: 320, y: 280 }; }
+        function openMessage(index) {
+            const message = messages[index];
+            if (!message) return;
+            const roleLabels = {
+                estudiante: "Estudiante",
+                docente: "Docente",
+                directivo: "Directivo / Coordinación",
+                invitado: "Invitado",
+            };
+            const role = message.roleLabel || roleLabels[message.rol] || "";
+            const details = [role, message.career || message.carrera, message.periodo, message.area].filter(Boolean);
+            document.getElementById("modalKicker").textContent = "Un deseo para nuestra comunidad";
+            document.getElementById("modalName").textContent = message.name;
+            document.getElementById("modalCareer").textContent = details.join(" · ") || message.career;
+            document.getElementById("modalText").textContent = `“${message.text}”`;
+            document.getElementById("messageBackdrop").hidden = false;
+            document.getElementById("closeModal").focus();
+        }
+        function openSampleMessage() {
+            document.getElementById("modalKicker").textContent = "Vista previa · no cuenta como participación";
+            document.getElementById("modalName").textContent = "Mensaje de ejemplo";
+            document.getElementById("modalCareer").textContent = "Comunidad IUTIRLA · Extensión Guayana";
+            document.getElementById("modalText").textContent = "“Que esta Navidad nos encuentre unidos y que cada deseo se convierta en una nueva oportunidad.”";
+            document.getElementById("messageBackdrop").hidden = false;
+            document.getElementById("closeModal").focus();
+        }
+        function openTributeMessage() {
+            document.getElementById("modalKicker").textContent = "Mensaje inaugural · homenaje especial";
+            document.getElementById("modalName").textContent = "Mireya Aguilera";
+            document.getElementById("modalCareer").textContent = "Coordinadora · IUTIRLA Extensión Guayana";
+            document.getElementById("modalText").textContent = "El mensaje de homenaje y apertura de la Expoferia está pendiente de redactar.";
+            document.getElementById("messageBackdrop").hidden = false;
+            document.getElementById("closeModal").focus();
+        }
+        const tributeStar = document.getElementById("tributeStar");
+        tributeStar.addEventListener("click", openTributeMessage);
+        tributeStar.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openTributeMessage(); }
+        });
+        function addBauble(group, x, y, gradient, radius) {
+            const sprite = gradient === "ballGold" ? "esfera-dorada.png" : "esfera-roja.png";
+            group.append(svgElement("circle", { class: "ornament-glow", cx: x, cy: y, r: radius + 6, fill: `url(#${gradient})` }));
+            group.append(svgElement("line", { class: "ornament-hanger", x1: x, y1: y - radius - 5, x2: x, y2: y - radius + 1, stroke: "#e8ca80", "stroke-width": 1 }));
+            group.append(svgElement("rect", { class: "ornament-hanger", x: x - 2.2, y: y - radius - 1, width: 4.4, height: 3, rx: 1 }));
+            group.append(svgElement("image", { class: "ornament-sprite", href: sprite, x: x - radius, y: y - radius, width: radius * 2, height: radius * 2, preserveAspectRatio: "none" }));
+        }
+        function renderOrnaments() {
+            ornamentsGroup.replaceChildren();
+            messages.forEach((message, index) => {
+                const { x, y } = slotFor(index);
+                const group = svgElement("g", { class: "ornament", tabindex: "0", role: "button", "aria-label": `Leer deseo de ${message.name}`, style: `animation-delay:${Math.min(index * 16, 500)}ms` });
+                const gradient = colors.includes(message.esferaColor) ? message.esferaColor : colors[index % colors.length];
+                addBauble(group, x, y, gradient, 9);
+                const title = svgElement("title");
+                title.textContent = `Deseo de ${message.name}`;
+                group.append(title);
+                group.addEventListener("click", () => openMessage(index));
+                group.addEventListener("keydown", event => {
+                    if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openMessage(index); }
+                });
+                ornamentsGroup.append(group);
+            });
+            if (!messages.length) {
+                const samples = [
+                    { x: 320, y: 305, color: "ballGold", label: "Esfera dorada de ejemplo" },
+                    { x: 350, y: 360, color: "ballRed", label: "Esfera roja de ejemplo" },
+                ];
+                samples.forEach(({ x, y, color, label }) => {
+                    const sample = svgElement("g", { class: "ornament", tabindex: "0", role: "button", "aria-label": `${label}; no cuenta como participación` });
+                    addBauble(sample, x, y, color, 10);
+                    const title = svgElement("title");
+                    title.textContent = `${label} · no cuenta como participación`;
+                    sample.append(title);
+                    sample.addEventListener("click", openSampleMessage);
+                    sample.addEventListener("keydown", event => {
+                        if (event.key === "Enter" || event.key === " ") { event.preventDefault(); openSampleMessage(); }
+                    });
+                    ornamentsGroup.append(sample);
+                });
+            }
+            document.getElementById("emptyMessage").style.display = messages.length ? "none" : "block";
+            document.getElementById("messageCount").textContent = messages.length;
+            document.getElementById("progressLabel").textContent = `${messages.length} de ${CAPACITY} luces`;
+            document.getElementById("progressFill").style.width = `${Math.min(messages.length / CAPACITY * 100, 100)}%`;
+            tree.setAttribute("aria-label", `Árbol de Navidad con ${messages.length} de ${CAPACITY} adornos`);
+        }
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            toast.textContent = message;
+            toast.hidden = false;
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => { toast.hidden = true; }, 4200);
+        }
+        window.addEventListener("storage", event => {
+            if (event.key !== STORAGE_KEY && event.key !== null) return;
+            try {
+                const saved = event.newValue === null ? [] : JSON.parse(event.newValue);
+                if (!Array.isArray(saved)) throw new Error("El registro local no tiene un formato válido.");
+                messages.splice(0, messages.length, ...saved.filter(isValidMessage).slice(0, CAPACITY));
+                renderOrnaments();
+                if (!document.getElementById("managementBackdrop").hidden) renderManagement();
+                showToast("El árbol se actualizó con los mensajes guardados en este navegador.");
+            } catch (error) {
+                console.error("No se pudieron actualizar los mensajes locales:", error);
+                showToast("No se pudo actualizar el árbol: el registro local no es válido.");
+            }
+        });
+        function managementField(labelText, name, value, multiline = false) {
+            const label = document.createElement("label");
+            label.className = `management-field${multiline ? " management-field-message" : ""}`;
+            const caption = document.createElement("span");
+            caption.textContent = labelText;
+            const control = document.createElement(multiline ? "textarea" : "input");
+            control.name = name;
+            control.value = value;
+            if (name !== "id") control.required = true;
+            if (multiline) control.maxLength = 400;
+            else control.maxLength = 120;
+            label.append(caption, control);
+            return label;
+        }
+        function editMessage(index, row) {
+            const message = messages[index];
+            const form = document.createElement("form");
+            form.className = "management-form";
+            form.append(
+                managementField("Cédula / ID", "participantId", message.participantId || ""),
+                managementField("Nombre y apellido", "name", message.name),
+                managementField("Mensaje", "text", message.text, true),
+            );
+            const actions = document.createElement("div");
+            actions.className = "management-form-actions";
+            const cancel = document.createElement("button");
+            cancel.className = "button";
+            cancel.type = "button";
+            cancel.textContent = "Cancelar";
+            cancel.addEventListener("click", () => { editingIndex = null; renderManagement(); });
+            const save = document.createElement("button");
+            save.className = "button button-primary";
+            save.type = "submit";
+            save.textContent = "Guardar cambios";
+            actions.append(cancel, save);
+            form.append(actions);
+            form.addEventListener("submit", event => {
+                event.preventDefault();
+                const fields = new FormData(form);
+                const updated = {
+                    ...message,
+                    participantId: String(fields.get("participantId") || "").trim(),
+                    name: String(fields.get("name") || "").trim(),
+                    text: String(fields.get("text") || "").trim(),
+                };
+                if (!updated.name || !updated.text) {
+                    showToast("Completa el nombre y el mensaje.");
+                    return;
+                }
+                if (hasRestrictedLanguage(`${updated.name} ${updated.career || ""} ${updated.area || ""} ${updated.text}`)) {
+                    showToast("El texto contiene lenguaje no permitido.");
+                    return;
+                }
+                const key = identity(updated);
+                if (messages.some((item, itemIndex) => itemIndex !== index && identity(item) === key)) {
+                    showToast("Ya existe un mensaje registrado con esa cédula o nombre.");
+                    return;
+                }
+                messages[index] = updated;
+                editingIndex = null;
+                saveMessages();
+                renderOrnaments();
+                renderManagement();
+                showToast("Mensaje actualizado.");
+            });
+            row.append(form);
+        }
+        function renderManagement() {
+            const list = document.getElementById("managementList");
+            list.replaceChildren();
+            document.getElementById("managementCount").textContent = `${messages.length} de ${CAPACITY} mensajes guardados`;
+            document.getElementById("clearMessages").disabled = messages.length === 0;
+            if (!messages.length) {
+                const empty = document.createElement("p");
+                empty.className = "management-empty";
+                empty.textContent = "Aún no hay mensajes reales. La esfera dorada de muestra no se guarda.";
+                list.append(empty);
+                return;
+            }
+            messages.forEach((message, index) => {
+                const row = document.createElement("article");
+                row.className = "management-row";
+                const content = document.createElement("div");
+                content.className = "management-row-content";
+                const details = document.createElement("div");
+                const name = document.createElement("h3");
+                name.textContent = `${index + 1}. ${message.name}`;
+                const meta = document.createElement("p");
+                meta.className = "management-row-meta";
+                const roleLabels = {
+                    estudiante: "Estudiante",
+                    docente: "Docente",
+                    directivo: "Directivo / Coordinación",
+                    invitado: "Invitado",
+                };
+                const participantDetails = [
+                    message.roleLabel || roleLabels[message.rol],
+                    message.participantId ? `Cédula / ID ${message.participantId}` : "",
+                    message.career || message.carrera,
+                    message.periodo,
+                    message.area,
+                ].filter(Boolean);
+                meta.textContent = participantDetails.join(" · ") || "Tipo de participante no especificado";
+                const text = document.createElement("p");
+                text.className = "management-row-text";
+                text.textContent = `“${message.text}”`;
+                details.append(name, meta, text);
+                const actions = document.createElement("div");
+                actions.className = "management-actions";
+                const edit = document.createElement("button");
+                edit.className = "button";
+                edit.type = "button";
+                edit.textContent = "Editar";
+                edit.addEventListener("click", () => { editingIndex = index; renderManagement(); });
+                const remove = document.createElement("button");
+                remove.className = "button button-danger";
+                remove.type = "button";
+                remove.textContent = "Borrar";
+                remove.addEventListener("click", () => {
+                    if (!window.confirm(`¿Borrar el mensaje de ${message.name}?`)) return;
+                    messages.splice(index, 1);
+                    editingIndex = null;
+                    saveMessages();
+                    renderOrnaments();
+                    renderManagement();
+                    showToast("Mensaje borrado.");
+                });
+                actions.append(edit, remove);
+                content.append(details, actions);
+                row.append(content);
+                if (editingIndex === index) editMessage(index, row);
+                list.append(row);
+            });
+        }
+        function closeManagement() {
+            document.getElementById("managementBackdrop").hidden = true;
+            editingIndex = null;
+        }
+        document.getElementById("manageButton").addEventListener("click", () => {
+            renderManagement();
+            document.getElementById("managementBackdrop").hidden = false;
+            document.getElementById("closeManagement").focus();
+        });
+        document.getElementById("closeManagement").addEventListener("click", closeManagement);
+        document.getElementById("managementBackdrop").addEventListener("click", event => {
+            if (event.target.id === "managementBackdrop") closeManagement();
+        });
+        document.getElementById("clearMessages").addEventListener("click", () => {
+            if (!messages.length || !window.confirm("¿Borrar todos los mensajes de este navegador? Esta acción no se puede deshacer.")) return;
+            messages.splice(0);
+            editingIndex = null;
+            saveMessages();
+            renderOrnaments();
+            renderManagement();
+            showToast("Se borraron todos los mensajes.");
+        });
+        document.getElementById("exportButton").addEventListener("click", () => {
+            const headers = ["Cedula/ID", "Nombre y apellido", "Tipo de participante", "Carrera", "Periodo", "Area", "Mensaje", "Fecha de envio"];
+            const roleLabels = {
+                estudiante: "Estudiante",
+                docente: "Docente",
+                directivo: "Directivo / Coordinación",
+                invitado: "Invitado",
+            };
+            const escapeCSV = value => {
+                const safeValue = String(value ?? "").replace(/^\s*[=+\-@]/, match => `'${match}`);
+                return `"${safeValue.replace(/"/g, '""')}"`;
+            };
+            const rows = [
+                headers,
+                ...messages.map(message => [
+                    message.participantId || message.id,
+                    message.name,
+                    message.roleLabel || roleLabels[message.rol] || "",
+                    message.career || message.carrera,
+                    message.periodo,
+                    message.area,
+                    message.text,
+                    message.createdAtClient || message.timestamp,
+                ]),
+            ];
+            const csv = "\ufeff" + rows.map(row => row.map(escapeCSV).join(";")).join("\r\n");
+            const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = "respaldo-local-arbol-de-los-deseos.csv";
+            link.click();
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+            showToast(`Se descargó el respaldo CSV con ${messages.length} mensajes.`);
+        });
+        document.getElementById("presentationButton").addEventListener("click", async () => {
+            document.body.classList.toggle("presentation");
+            if (!document.fullscreenElement) {
+                try { await document.documentElement.requestFullscreen(); }
+                catch { showToast("Pulsa F11 para activar la pantalla completa."); }
+            } else await document.exitFullscreen();
+        });
+        function closeMessage() { document.getElementById("messageBackdrop").hidden = true; }
+        document.getElementById("closeModal").addEventListener("click", closeMessage);
+        document.getElementById("modalDone").addEventListener("click", closeMessage);
+        document.getElementById("messageBackdrop").addEventListener("click", event => { if (event.target.id === "messageBackdrop") closeMessage(); });
+        document.addEventListener("keydown", event => {
+            if (event.key === "Escape") { closeMessage(); closeManagement(); document.body.classList.remove("presentation"); }
+        });
+        document.addEventListener("fullscreenchange", () => { if (!document.fullscreenElement) document.body.classList.remove("presentation"); });
+        renderOrnaments();
+    </script>
+</body>
+</html>
