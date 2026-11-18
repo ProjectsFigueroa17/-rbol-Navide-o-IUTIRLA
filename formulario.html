@@ -471,7 +471,7 @@
     </main>
 
     <script type="module">
-        import { get, ref, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { get, ref, set } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
         import { database, COLLECTION_NAME } from "./firebase-config.js";
         const CAPACITY = 100;
         // Filtro de términos restringidos
@@ -612,6 +612,7 @@
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span>Guardando mensaje...</span>`;
 
+            let privateRecordSaved = false;
             try {
                 const wishesSnapshot = await get(ref(database, COLLECTION_NAME));
                 const savedWishes = wishesSnapshot.exists() ? wishesSnapshot.val() : {};
@@ -626,22 +627,21 @@
                     return;
                 }
                 const timestamp = Date.now();
-                await update(ref(database), {
-                    [`${COLLECTION_NAME}/${wishKey}`]: {
-                        name: "Integrante de la comunidad",
-                        text: payload.text,
-                        esferaColor: payload.esferaColor,
-                        timestamp,
-                    },
-                    [`privateParticipants/${wishKey}`]: {
-                        participantId: payload.participantId,
-                        rol: payload.rol,
-                        name: payload.name,
-                        career: payload.career,
-                        periodo: payload.periodo,
-                        area: payload.area,
-                        timestamp,
-                    },
+                await set(ref(database, `privateParticipants/${wishKey}`), {
+                    participantId: payload.participantId,
+                    rol: payload.rol,
+                    name: payload.name,
+                    career: payload.career,
+                    periodo: payload.periodo,
+                    area: payload.area,
+                    timestamp,
+                });
+                privateRecordSaved = true;
+                await set(ref(database, `${COLLECTION_NAME}/${wishKey}`), {
+                    name: "Integrante de la comunidad",
+                    text: payload.text,
+                    esferaColor: payload.esferaColor,
+                    timestamp,
                 });
                 successScreen.style.display = "flex";
                 form.reset();
@@ -650,7 +650,9 @@
             } catch (err) {
                 console.error("No se pudo guardar el deseo en Firebase:", err);
                 const errorCode = String(err.code || "").toLowerCase().replace(/_/g, "-");
-                const message = errorCode.includes("permission-denied")
+                const message = privateRecordSaved
+                    ? "El envío quedó incompleto. Es posible que tus datos se hayan guardado, pero no el deseo; avisa a la administración antes de reintentar."
+                    : errorCode.includes("permission-denied")
                     ? "Firebase rechazó el envío. Puede que otra persona haya ocupado ese espacio; intenta de nuevo. Si continúa, revisa las reglas y App Check."
                     : "No se pudo guardar el mensaje. Inténtalo de nuevo más tarde.";
                 showAlert(message);
