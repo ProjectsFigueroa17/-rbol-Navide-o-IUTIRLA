@@ -278,7 +278,7 @@
     </div>
     <div class="toast" id="toast" role="status" hidden></div>
     <script type="module">
-        import { get, onValue, ref, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { get, onValue, ref, remove, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
         import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
         import { auth, database, COLLECTION_NAME } from "./firebase-config.js";
 
@@ -536,11 +536,15 @@
                         showToast("Formato de cédula inválido. Usa 17.459.857 o V-17.459.857.");
                         return;
                     }
-                    await update(ref(database), {
-                        [`privateParticipants/${message.privateKey}/participantId`]: participantId,
-                        [`privateParticipants/${message.privateKey}/name`]: String(fields.get("name") || "").trim(),
-                        [`publicWishes/${message.id}/text`]: String(fields.get("text") || "").trim(),
-                    });
+                    await Promise.all([
+                        update(ref(database, `privateParticipants/${message.privateKey}`), {
+                            participantId,
+                            name: String(fields.get("name") || "").trim(),
+                        }),
+                        update(ref(database, `publicWishes/${message.id}`), {
+                            text: String(fields.get("text") || "").trim(),
+                        }),
+                    ]);
                     editingIndex = null;
                     await refreshAdminMessages();
                     showToast("Mensaje actualizado.");
@@ -600,10 +604,10 @@
                 removeButton.addEventListener("click", async () => {
                     if (!window.confirm(`¿Borrar el mensaje de ${message.name}?`)) return;
                     try {
-                        await update(ref(database), {
-                            [`publicWishes/${message.id}`]: null,
-                            [`privateParticipants/${message.privateKey}`]: null,
-                        });
+                        await Promise.all([
+                            remove(ref(database, `publicWishes/${message.id}`)),
+                            remove(ref(database, `privateParticipants/${message.privateKey}`)),
+                        ]);
                         editingIndex = null;
                         await refreshAdminMessages();
                         showToast("Mensaje borrado.");
@@ -668,10 +672,10 @@
         });
         document.getElementById("clearMessages").addEventListener("click", () => {
             if (!adminMessages.length || !window.confirm("¿Borrar todos los mensajes y datos privados de Firebase? Esta acción no se puede deshacer.")) return;
-            update(ref(database), {
-                publicWishes: null,
-                privateParticipants: null,
-            })
+            Promise.all([
+                remove(wishesRef),
+                remove(privateParticipantsRef),
+            ])
                 .then(async () => {
                     editingIndex = null;
                     await refreshAdminMessages();
