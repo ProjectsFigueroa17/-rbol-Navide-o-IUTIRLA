@@ -1,39 +1,32 @@
-// ╔══════════════════════════════════════════════════════════════╗
-// ║  CONFIGURACIÓN DE FIREBASE — Árbol de los Deseos           ║
-// ║                                                            ║
-// ║  INSTRUCCIONES:                                            ║
-// ║  1. Ve a https://console.firebase.google.com               ║
-// ║  2. Crea un proyecto nuevo (o usa uno existente)           ║
-// ║  3. En "Configuración del proyecto" > "Tus apps",          ║
-// ║     agrega una app web (</>)                               ║
-// ║  4. Copia los valores de firebaseConfig aquí abajo         ║
-// ║  5. En Firestore Database, crea la base de datos           ║
-// ║     (modo producción, región us-east1 o la más cercana)    ║
-// ║  6. En Reglas de Firestore, pega las reglas de abajo       ║
-// ║                                                            ║
-// ║  REGLAS DE FIRESTORE (pegar en Firestore > Reglas):        ║
-// ║                                                            ║
-// ║  rules_version = '2';                                      ║
-// ║  service cloud.firestore {                                 ║
-// ║    match /databases/{database}/documents {                 ║
-// ║      match /deseos/{deseoId} {                             ║
-// ║        allow read: if true;                                ║
-// ║        allow create: if request.resource.data.estado       ║
-// ║                       == "pendiente";                      ║
-// ║        allow update, delete: if true;                      ║
-// ║      }                                                     ║
-// ║    }                                                       ║
-// ║  }                                                         ║
-// ╚══════════════════════════════════════════════════════════════╝
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+import { getDatabase } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app-check.js";
 
 export const firebaseConfig = {
-    apiKey:            "TU_API_KEY_AQUI",
-    authDomain:        "TU_PROYECTO.firebaseapp.com",
-    projectId:         "TU_PROJECT_ID",
-    storageBucket:     "TU_PROYECTO.firebasestorage.app",
-    messagingSenderId: "TU_SENDER_ID",
-    appId:             "TU_APP_ID"
+    apiKey: "AIzaSyCIIJayJodpW_4pGMGDvd35QTr3MnAOaq0",
+    authDomain: "arbol-de-los-deseos-73f8a.firebaseapp.com",
+    projectId: "arbol-de-los-deseos-73f8a",
+    storageBucket: "arbol-de-los-deseos-73f8a.firebasestorage.app",
+    messagingSenderId: "272720207465",
+    appId: "1:272720207465:web:b9a523d8ebba46d5c50cf8",
+    measurementId: "G-5B2DWMV06Q",
+    databaseURL: "https://arbol-de-los-deseos-73f8a-default-rtdb.firebaseio.com",
+    appCheckSiteKey: "6LficyUuAAAAAITDfWildysJaQFJbrR9MHzgj2vq"
 };
 
-// Nombre de la colección en Firestore
-export const COLLECTION_NAME = "deseos";
+export const COLLECTION_NAME = "publicWishes";
+export const app = initializeApp(firebaseConfig);
+
+if (firebaseConfig.appCheckSiteKey) {
+    initializeAppCheck(app, {
+        provider: new ReCaptchaEnterpriseProvider(firebaseConfig.appCheckSiteKey),
+        isTokenAutoRefreshEnabled: true
+    });
+} else {
+    console.warn("Configura la clave de sitio de App Check para proteger las conexiones a Firebase.");
+}
+
+export const auth = getAuth(app);
+export const database = getDatabase(app);
+
