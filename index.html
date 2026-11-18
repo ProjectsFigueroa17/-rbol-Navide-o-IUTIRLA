@@ -94,12 +94,17 @@
         .modal-career { margin: 8px 0 26px; color: var(--muted); font-size: 13px; }
         .modal-message { margin: 0 0 26px; font-family: "Playfair Display",Georgia,serif; font-size: clamp(20px,3vw,29px); line-height: 1.5; overflow-wrap: anywhere; }
         .modal-close { position: absolute; top: 13px; right: 13px; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; background: transparent; cursor: pointer; font-size: 21px; }
+        .tribute-profile { display: none; width: min(290px, 78%); margin: 2px auto 22px; }
+        .tribute-profile.is-visible { display: block; animation: tribute-in .55s ease both; }
+        .tribute-profile img { display: block; width: 140px; height: 140px; max-width: 80%; margin: 0 auto 16px; border: 2px solid rgba(245,207,119,.72); border-radius: 50%; object-fit: contain; background: #fff; box-shadow: 0 0 32px rgba(245,207,119,.16); }
+        .tribute-role { margin: 0; color: var(--gold); font-size: 11px; font-weight: 700; letter-spacing: .16em; text-transform: uppercase; }
+        .project-credits { width: 100%; padding: 8px 0 2px; color: rgba(182,195,183,.62); font-size: 10px; letter-spacing: .04em; text-align: center; }
         .toast { position: fixed; z-index: 20; right: 22px; bottom: 22px; max-width: min(420px,calc(100vw - 44px)); padding: 14px 18px; border: 1px solid var(--line); border-radius: 5px; background: #183523; box-shadow: 0 12px 35px rgba(0,0,0,.3); color: var(--paper); font-size: 13px; animation: modal-in .2s ease both; }
         .management-dialog { position: relative; display: flex; width: min(100%, 860px); max-height: 88vh; padding: 28px; flex-direction: column; border: 1px solid rgba(245,207,119,.4); border-radius: 8px; background: #102419; box-shadow: 0 24px 100px rgba(0,0,0,.5); }
         .management-header { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 0 42px 18px 0; border-bottom: 1px solid var(--line); }
         .management-header h2 { margin: 0; font-family: "Playfair Display",Georgia,serif; font-size: 28px; font-weight: 600; }
         .management-count { margin: 5px 0 0; color: var(--muted); font-size: 12px; }
-        .management-toolbar { display: flex; gap: 8px; }
+        .management-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
         .button-danger { border-color: rgba(239,120,105,.45); color: #ffb1a5; }
         .button-danger:hover { border-color: #ff8b7d; background: rgba(189,55,45,.16); }
         .management-note { margin: 13px 0; color: var(--muted); font-size: 12px; line-height: 1.5; }
@@ -118,6 +123,13 @@
         .management-field textarea { min-height: 68px; resize: vertical; }
         .management-field-message { grid-column: 1 / -1; }
         .management-form-actions { display: flex; grid-column: 1 / -1; justify-content: end; gap: 8px; }
+        .admin-login { display: grid; max-width: 440px; gap: 12px; padding-top: 20px; }
+        .admin-login[hidden], .admin-panel[hidden] { display: none; }
+        .admin-login label { display: grid; gap: 6px; color: var(--muted); font-size: 12px; }
+        .admin-login input { min-height: 42px; padding: 9px 10px; border: 1px solid var(--line); border-radius: 4px; background: rgba(0,0,0,.2); color: var(--paper); font: inherit; }
+        .admin-login-message { min-height: 18px; color: var(--muted); font-size: 12px; }
+        .admin-panel[hidden] { display: none; }
+        .admin-account { margin-left: auto; color: var(--muted); font-size: 11px; }
         .presentation .top-actions, .presentation .intro-note, .presentation .tree-meta-note { display: none; }
         .presentation .app-shell { padding-top: 10px; }
         .presentation .intro { min-height: 93px; }
@@ -128,6 +140,8 @@
         @keyframes star-pulse { 50% { opacity: .78; transform: scale(.94); } }
         @keyframes ornament-in { from { opacity: 0; transform: scale(.25); } to { opacity: 1; transform: scale(1); } }
         @keyframes modal-in { from { opacity: 0; transform: translateY(8px) scale(.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes portrait-turn { 0%, 12% { transform: rotateY(0deg); } 48%, 62% { transform: rotateY(360deg); } 100% { transform: rotateY(360deg); } }
+        @keyframes tribute-in { from { opacity: 0; transform: translateY(-7px) scale(.96); } to { opacity: 1; transform: translateY(0) scale(1); } }
         @media (min-width: 1500px) and (min-height: 850px) { .app-shell { padding-top: 30px; } .tree-stage { min-height: 560px; } #tree { max-height: min(66vh, 900px); } }
         @media (max-width: 760px) {
             .app-shell { min-height: 100svh; padding: 12px 17px; }
@@ -206,12 +220,12 @@
                         <filter id="starGlow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="6" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
                     </defs>
                     <image href="arbol-base-transparente.png" x="122" y="0" width="396" height="560" preserveAspectRatio="none" aria-hidden="true"/>
-                    <g id="tributeStar" class="tribute-star" tabindex="0" role="button" aria-label="Abrir homenaje a Mireya Aguilera">
+                    <g id="tributeStar" class="tribute-star" tabindex="0" role="button" aria-label="Abrir mensaje de IUTIRLA Guayana">
                         <circle cx="320" cy="67" r="28" fill="transparent" pointer-events="all"/>
-                        <title>Homenaje de apertura a Mireya Aguilera</title>
+                        <title>Mensaje de IUTIRLA Guayana</title>
                     </g>
                     <g id="ornaments" aria-label="Mensajes del árbol"></g>
-                    <text id="emptyMessage" class="empty-message" x="320" y="539">Prueba las esferas roja y dorada</text>
+                    <text id="emptyMessage" class="empty-message" x="320" y="539">Una luz por cada deseo</text>
                 </svg>
             </section>
             <footer class="tree-meta">
@@ -219,34 +233,58 @@
                 <div class="progress-wrap" aria-label="Progreso del árbol"><div class="progress-track"><div class="progress-fill" id="progressFill"></div></div><span class="progress-label" id="progressLabel">0 de 100 luces</span></div>
                 <span class="tree-meta-note">Selecciona una esfera para leer el deseo</span>
             </footer>
+            <div class="project-credits">Proyecto y desarrollo: Leonardo Figueroa</div>
         </main>
     </div>
     <div class="modal-backdrop" id="messageBackdrop" hidden>
         <article class="message-modal" role="dialog" aria-modal="true" aria-labelledby="modalName">
             <button class="modal-close" id="closeModal" type="button" aria-label="Cerrar mensaje">×</button>
             <div class="modal-star" aria-hidden="true">✳</div><p class="modal-kicker" id="modalKicker">Un deseo para nuestra comunidad</p>
-            <h2 id="modalName"></h2><p class="modal-career" id="modalCareer"></p><p class="modal-message" id="modalText"></p>
+            <h2 id="modalName"></h2><p class="modal-career" id="modalCareer"></p>
+            <div class="tribute-profile" id="tributeProfile" aria-label="Identidad institucional de IUTIRLA Guayana">
+                <img src="escudo-iutirla.png" alt="Escudo de IUTIRLA Guayana">
+            </div>
+            <p class="modal-message" id="modalText"></p>
             <button class="button" id="modalDone" type="button">Volver al árbol</button>
         </article>
     </div>
     <div class="modal-backdrop" id="managementBackdrop" hidden>
         <section class="management-dialog" role="dialog" aria-modal="true" aria-labelledby="managementTitle">
             <button class="modal-close" id="closeManagement" type="button" aria-label="Cerrar administración">×</button>
-            <header class="management-header">
-                <div><h2 id="managementTitle">Administrar mensajes</h2><p class="management-count" id="managementCount"></p></div>
-                <div class="management-toolbar">
-                    <button class="button" id="exportButton" type="button">Descargar respaldo CSV</button>
-                    <button class="button button-danger" id="clearMessages" type="button">Vaciar árbol</button>
-                </div>
-            </header>
-            <p class="management-note">Registro local de pruebas. El CSV incluye cédulas o IDs; guárdalo de forma privada. Vaciar el árbol elimina los mensajes de este navegador.</p>
-            <div class="management-list" id="managementList"></div>
+            <h2 id="managementTitle">Administrar mensajes</h2>
+            <div id="adminLogin" class="admin-login">
+                <p class="management-note">Inicia sesión con la cuenta administrativa autorizada para consultar datos personales y moderar mensajes.</p>
+                <form id="adminLoginForm">
+                    <label>Correo electrónico<input id="adminEmail" type="email" autocomplete="username" required></label>
+                    <label>Contraseña<input id="adminPassword" type="password" autocomplete="current-password" required></label>
+                    <button class="button button-primary" type="submit">Iniciar sesión</button>
+                </form>
+                <p class="admin-login-message" id="adminLoginMessage" role="status"></p>
+            </div>
+            <div id="adminPanel" class="admin-panel" hidden>
+                <header class="management-header">
+                    <div><p class="management-count" id="managementCount"></p></div>
+                    <span class="admin-account" id="adminAccount"></span>
+                    <div class="management-toolbar">
+                        <button class="button" id="exportButton" type="button">Descargar respaldo CSV</button>
+                        <button class="button button-danger" id="clearMessages" type="button">Vaciar árbol</button>
+                        <button class="button" id="adminSignOut" type="button">Cerrar sesión</button>
+                    </div>
+                </header>
+                <p class="management-note">Los datos identificables solo se consultan en esta sesión autorizada. Guarda el CSV en un dispositivo y ubicación privados.</p>
+                <div class="management-list" id="managementList"></div>
+            </div>
         </section>
     </div>
     <div class="toast" id="toast" role="status" hidden></div>
-    <script>
+    <script type="module">
+        import { get, onValue, ref, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { onAuthStateChanged, signInWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+        import { auth, database, COLLECTION_NAME } from "./firebase-config.js";
+
+        const wishesRef = ref(database, COLLECTION_NAME);
+        const privateParticipantsRef = ref(database, "privateParticipants");
         const CAPACITY = 100;
-        const STORAGE_KEY = "iutirla-arbol-deseos-v1";
         const colors = ["ballRed", "ballGold"];
         const TREE_PROFILE = [
             [.12, 633, 726], [.16, 636, 741], [.20, 588, 798], [.25, 531, 894],
@@ -254,39 +292,26 @@
             [.70, 138, 1257], [.80, 156, 1290], [.88, 186, 1191],
         ];
         const TREE_ROWS = [[.20, 3], [.275, 5], [.35, 7], [.425, 9], [.50, 10], [.575, 12], [.65, 14], [.725, 15], [.80, 15], [.875, 10]];
-        const RESTRICTED_TERMS = [
-            "bastardo", "cabron", "carajo", "chingar", "cojones", "culero",
-            "estupido", "fuck", "hijueputa", "imbecil", "idiota", "joder",
-            "malparido", "mamaguevo", "marica", "maricon", "mierda", "pendejo",
-            "perra", "puta", "puto", "shit", "verga",
-        ];
-        const restrictedPattern = new RegExp(
-            `(^|[^a-z0-9])(?:${RESTRICTED_TERMS.map(term => term.split("").join("[^a-z0-9]*")).join("|")})(?:$|[^a-z0-9])`,
-        );
         const svgNamespace = "http://www.w3.org/2000/svg";
         const ornamentsGroup = document.getElementById("ornaments");
         const tree = document.getElementById("tree");
-        const messages = loadSavedMessages();
+        const messages = [];
+        let adminMessages = [];
         let toastTimer;
         let editingIndex = null;
+        let resolveInitialAuth;
+        const initialAuthState = new Promise(resolve => { resolveInitialAuth = resolve; });
+        onAuthStateChanged(auth, () => resolveInitialAuth());
 
         function isValidMessage(message) {
-            return message && typeof message.name === "string" && typeof message.career === "string" && typeof message.text === "string";
+            return message && typeof message.name === "string" && typeof message.text === "string";
         }
-        function loadSavedMessages() {
-            try {
-                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-                return Array.isArray(saved) ? saved.filter(isValidMessage).slice(0, CAPACITY) : [];
-            } catch { return []; }
+        function normalizeParticipantId(value) {
+            const number = String(value || "").trim().replace(/^[VE]\s*-?\s*/i, "");
+            if (!/^(?:\d{6,9}|\d{1,3}(?:\.\d{3}){1,2})$/.test(number)) return "";
+            const digits = number.replace(/\D/g, "");
+            return digits.length >= 6 && digits.length <= 9 ? digits : "";
         }
-        function normalized(value) { return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase(); }
-        function hasRestrictedLanguage(value) {
-            return restrictedPattern.test(normalized(value).replace(/[013457@$]/g, character => ({ "0": "o", "1": "i", "3": "e", "4": "a", "5": "s", "7": "t", "@": "a", "$": "s" })[character]));
-        }
-        function identity(message) {
-            return normalized(message.participantId || message.id || message.name).replace(/[^a-z0-9]/g, "");
-        }
-        function saveMessages() { localStorage.setItem(STORAGE_KEY, JSON.stringify(messages)); }
         function svgElement(name, attributes = {}) {
             const element = document.createElementNS(svgNamespace, name);
             Object.entries(attributes).forEach(([key, value]) => element.setAttribute(key, value));
@@ -321,6 +346,8 @@
         function openMessage(index) {
             const message = messages[index];
             if (!message) return;
+            document.getElementById("tributeProfile").classList.remove("is-visible");
+            document.getElementById("modalText").hidden = false;
             const roleLabels = {
                 estudiante: "Estudiante",
                 docente: "Docente",
@@ -331,12 +358,14 @@
             const details = [role, message.career || message.carrera, message.periodo, message.area].filter(Boolean);
             document.getElementById("modalKicker").textContent = "Un deseo para nuestra comunidad";
             document.getElementById("modalName").textContent = message.name;
-            document.getElementById("modalCareer").textContent = details.join(" · ") || message.career;
+            document.getElementById("modalCareer").textContent = details.join(" · ") || "Deseo anónimo";
             document.getElementById("modalText").textContent = `“${message.text}”`;
             document.getElementById("messageBackdrop").hidden = false;
             document.getElementById("closeModal").focus();
         }
         function openSampleMessage() {
+            document.getElementById("tributeProfile").classList.remove("is-visible");
+            document.getElementById("modalText").hidden = false;
             document.getElementById("modalKicker").textContent = "Vista previa · no cuenta como participación";
             document.getElementById("modalName").textContent = "Mensaje de ejemplo";
             document.getElementById("modalCareer").textContent = "Comunidad IUTIRLA · Extensión Guayana";
@@ -345,10 +374,12 @@
             document.getElementById("closeModal").focus();
         }
         function openTributeMessage() {
-            document.getElementById("modalKicker").textContent = "Mensaje inaugural · homenaje especial";
-            document.getElementById("modalName").textContent = "Mireya Aguilera";
-            document.getElementById("modalCareer").textContent = "Coordinadora · IUTIRLA Extensión Guayana";
-            document.getElementById("modalText").textContent = "El mensaje de homenaje y apertura de la Expoferia está pendiente de redactar.";
+            document.getElementById("modalKicker").textContent = "Participación institucional";
+            document.getElementById("modalName").textContent = "IUTIRLA GUAYANA";
+            document.getElementById("modalCareer").textContent = "Grupo del 4to trimestre de Informática";
+            document.getElementById("tributeProfile").classList.add("is-visible");
+            document.getElementById("modalText").textContent = "";
+            document.getElementById("modalText").hidden = true;
             document.getElementById("messageBackdrop").hidden = false;
             document.getElementById("closeModal").focus();
         }
@@ -411,19 +442,17 @@
             clearTimeout(toastTimer);
             toastTimer = setTimeout(() => { toast.hidden = true; }, 4200);
         }
-        window.addEventListener("storage", event => {
-            if (event.key !== STORAGE_KEY && event.key !== null) return;
-            try {
-                const saved = event.newValue === null ? [] : JSON.parse(event.newValue);
-                if (!Array.isArray(saved)) throw new Error("El registro local no tiene un formato válido.");
-                messages.splice(0, messages.length, ...saved.filter(isValidMessage).slice(0, CAPACITY));
-                renderOrnaments();
-                if (!document.getElementById("managementBackdrop").hidden) renderManagement();
-                showToast("El árbol se actualizó con los mensajes guardados en este navegador.");
-            } catch (error) {
-                console.error("No se pudieron actualizar los mensajes locales:", error);
-                showToast("No se pudo actualizar el árbol: el registro local no es válido.");
-            }
+        onValue(wishesRef, snapshot => {
+            const saved = snapshot.exists() ? snapshot.val() : {};
+            const records = Object.entries(saved)
+                .map(([key, message]) => ({ ...message, id: key }))
+                .filter(isValidMessage)
+                .sort((a, b) => Number(a.timestamp || 0) - Number(b.timestamp || 0));
+            messages.splice(0, messages.length, ...records.slice(0, CAPACITY));
+            renderOrnaments();
+        }, error => {
+            console.error("No se pudo leer Realtime Database:", error);
+            showToast("No se pudo conectar el árbol con Firebase.");
         });
         function managementField(labelText, name, value, multiline = false) {
             const label = document.createElement("label");
@@ -433,19 +462,55 @@
             const control = document.createElement(multiline ? "textarea" : "input");
             control.name = name;
             control.value = value;
-            if (name !== "id") control.required = true;
-            if (multiline) control.maxLength = 400;
-            else control.maxLength = 120;
+            control.required = true;
+            control.maxLength = multiline ? 300 : name === "participantId" ? 80 : 120;
             label.append(caption, control);
             return label;
         }
-        function editMessage(index, row) {
-            const message = messages[index];
+        async function refreshAdminMessages() {
+            const [privateSnapshot, publicSnapshot] = await Promise.all([
+                get(privateParticipantsRef),
+                get(wishesRef),
+            ]);
+            const participants = privateSnapshot.exists() ? privateSnapshot.val() : {};
+            const wishes = publicSnapshot.exists() ? publicSnapshot.val() : {};
+            const roleLabels = {
+                estudiante: "Estudiante",
+                docente: "Docente",
+                directivo: "Directivo / Coordinación",
+                invitado: "Invitado",
+            };
+            adminMessages = Object.entries(participants)
+                .map(([privateKey, participant]) => {
+                    const wishKey = participant.wishKey || privateKey;
+                    const publicWish = wishes[wishKey] || {};
+                    return {
+                        ...publicWish,
+                        ...participant,
+                        id: wishKey,
+                        privateKey,
+                        text: publicWish.text || participant.text || "",
+                        roleLabel: participant.roleLabel || roleLabels[participant.rol || participant.role] || "",
+                    };
+                })
+                .filter(message => message.name && message.text);
+            document.getElementById("adminLogin").hidden = true;
+            document.getElementById("adminPanel").hidden = false;
+            document.getElementById("adminAccount").textContent = auth.currentUser.email || "";
+            renderManagement();
+        }
+        function showAdminLogin(message = "") {
+            document.getElementById("adminLogin").hidden = false;
+            document.getElementById("adminPanel").hidden = true;
+            document.getElementById("adminLoginMessage").textContent = message;
+        }
+        async function editMessage(index, row) {
+            const message = adminMessages[index];
             const form = document.createElement("form");
             form.className = "management-form";
             form.append(
-                managementField("Cédula / ID", "participantId", message.participantId || ""),
-                managementField("Nombre y apellido", "name", message.name),
+                managementField("Cédula / ID (privado)", "participantId", message.participantId || ""),
+                managementField("Nombre y apellido (privado)", "name", message.name),
                 managementField("Mensaje", "text", message.text, true),
             );
             const actions = document.createElement("div");
@@ -461,50 +526,46 @@
             save.textContent = "Guardar cambios";
             actions.append(cancel, save);
             form.append(actions);
-            form.addEventListener("submit", event => {
+            form.addEventListener("submit", async event => {
                 event.preventDefault();
+                save.disabled = true;
                 const fields = new FormData(form);
-                const updated = {
-                    ...message,
-                    participantId: String(fields.get("participantId") || "").trim(),
-                    name: String(fields.get("name") || "").trim(),
-                    text: String(fields.get("text") || "").trim(),
-                };
-                if (!updated.name || !updated.text) {
-                    showToast("Completa el nombre y el mensaje.");
-                    return;
+                try {
+                    const participantId = normalizeParticipantId(String(fields.get("participantId") || ""));
+                    if (!participantId) {
+                        showToast("Formato de cédula inválido. Usa 17.459.857 o V-17.459.857.");
+                        return;
+                    }
+                    await update(ref(database), {
+                        [`privateParticipants/${message.privateKey}/participantId`]: participantId,
+                        [`privateParticipants/${message.privateKey}/name`]: String(fields.get("name") || "").trim(),
+                        [`publicWishes/${message.id}/text`]: String(fields.get("text") || "").trim(),
+                    });
+                    editingIndex = null;
+                    await refreshAdminMessages();
+                    showToast("Mensaje actualizado.");
+                } catch (error) {
+                    console.error("No se pudo actualizar el deseo:", error);
+                    showToast(error.message || "No se pudo actualizar el mensaje.");
+                } finally {
+                    save.disabled = false;
                 }
-                if (hasRestrictedLanguage(`${updated.name} ${updated.career || ""} ${updated.area || ""} ${updated.text}`)) {
-                    showToast("El texto contiene lenguaje no permitido.");
-                    return;
-                }
-                const key = identity(updated);
-                if (messages.some((item, itemIndex) => itemIndex !== index && identity(item) === key)) {
-                    showToast("Ya existe un mensaje registrado con esa cédula o nombre.");
-                    return;
-                }
-                messages[index] = updated;
-                editingIndex = null;
-                saveMessages();
-                renderOrnaments();
-                renderManagement();
-                showToast("Mensaje actualizado.");
             });
             row.append(form);
         }
         function renderManagement() {
             const list = document.getElementById("managementList");
             list.replaceChildren();
-            document.getElementById("managementCount").textContent = `${messages.length} de ${CAPACITY} mensajes guardados`;
-            document.getElementById("clearMessages").disabled = messages.length === 0;
-            if (!messages.length) {
+            document.getElementById("managementCount").textContent = `${adminMessages.length} de ${CAPACITY} mensajes`;
+            document.getElementById("clearMessages").disabled = adminMessages.length === 0;
+            if (!adminMessages.length) {
                 const empty = document.createElement("p");
                 empty.className = "management-empty";
                 empty.textContent = "Aún no hay mensajes reales. La esfera dorada de muestra no se guarda.";
                 list.append(empty);
                 return;
             }
-            messages.forEach((message, index) => {
+            adminMessages.forEach((message, index) => {
                 const row = document.createElement("article");
                 row.className = "management-row";
                 const content = document.createElement("div");
@@ -514,20 +575,13 @@
                 name.textContent = `${index + 1}. ${message.name}`;
                 const meta = document.createElement("p");
                 meta.className = "management-row-meta";
-                const roleLabels = {
-                    estudiante: "Estudiante",
-                    docente: "Docente",
-                    directivo: "Directivo / Coordinación",
-                    invitado: "Invitado",
-                };
-                const participantDetails = [
-                    message.roleLabel || roleLabels[message.rol],
+                meta.textContent = [
+                    message.roleLabel,
                     message.participantId ? `Cédula / ID ${message.participantId}` : "",
-                    message.career || message.carrera,
+                    message.career,
                     message.periodo,
-                    message.area,
-                ].filter(Boolean);
-                meta.textContent = participantDetails.join(" · ") || "Tipo de participante no especificado";
+                    message.area
+                ].filter(Boolean).join(" · ");
                 const text = document.createElement("p");
                 text.className = "management-row-text";
                 text.textContent = `“${message.text}”`;
@@ -539,20 +593,26 @@
                 edit.type = "button";
                 edit.textContent = "Editar";
                 edit.addEventListener("click", () => { editingIndex = index; renderManagement(); });
-                const remove = document.createElement("button");
-                remove.className = "button button-danger";
-                remove.type = "button";
-                remove.textContent = "Borrar";
-                remove.addEventListener("click", () => {
+                const removeButton = document.createElement("button");
+                removeButton.className = "button button-danger";
+                removeButton.type = "button";
+                removeButton.textContent = "Borrar";
+                removeButton.addEventListener("click", async () => {
                     if (!window.confirm(`¿Borrar el mensaje de ${message.name}?`)) return;
-                    messages.splice(index, 1);
-                    editingIndex = null;
-                    saveMessages();
-                    renderOrnaments();
-                    renderManagement();
-                    showToast("Mensaje borrado.");
+                    try {
+                        await update(ref(database), {
+                            [`publicWishes/${message.id}`]: null,
+                            [`privateParticipants/${message.privateKey}`]: null,
+                        });
+                        editingIndex = null;
+                        await refreshAdminMessages();
+                        showToast("Mensaje borrado.");
+                    } catch (error) {
+                        console.error("No se pudo borrar el deseo:", error);
+                        showToast(error.message || "No se pudo borrar el mensaje.");
+                    }
                 });
-                actions.append(edit, remove);
+                actions.append(edit, removeButton);
                 content.append(details, actions);
                 row.append(content);
                 if (editingIndex === index) editMessage(index, row);
@@ -563,23 +623,64 @@
             document.getElementById("managementBackdrop").hidden = true;
             editingIndex = null;
         }
-        document.getElementById("manageButton").addEventListener("click", () => {
-            renderManagement();
+        document.getElementById("manageButton").addEventListener("click", async () => {
             document.getElementById("managementBackdrop").hidden = false;
-            document.getElementById("closeManagement").focus();
+            document.getElementById("adminLoginMessage").textContent = "";
+            await initialAuthState;
+            if (!auth.currentUser) {
+                showAdminLogin();
+                document.getElementById("adminEmail").focus();
+                return;
+            }
+            try {
+                await refreshAdminMessages();
+            } catch (error) {
+                console.error("La cuenta no pudo abrir la administración:", error);
+                showAdminLogin("No se autorizó esta cuenta. Verifica que su UID esté registrado en /admins.");
+            }
+        });
+        document.getElementById("adminLoginForm").addEventListener("submit", async event => {
+            event.preventDefault();
+            const loginMessage = document.getElementById("adminLoginMessage");
+            loginMessage.textContent = "Verificando cuenta…";
+            try {
+                await signInWithEmailAndPassword(
+                    auth,
+                    document.getElementById("adminEmail").value.trim(),
+                    document.getElementById("adminPassword").value
+                );
+                await refreshAdminMessages();
+                document.getElementById("adminPassword").value = "";
+            } catch (error) {
+                console.error("No se pudo iniciar sesión como administrador:", error);
+                await signOut(auth);
+                showAdminLogin("No se pudo autorizar el acceso. Comprueba la cuenta, la configuración de App Check y el UID en /admins.");
+            }
+        });
+        document.getElementById("adminSignOut").addEventListener("click", async () => {
+            await signOut(auth);
+            adminMessages = [];
+            showAdminLogin("Sesión cerrada.");
         });
         document.getElementById("closeManagement").addEventListener("click", closeManagement);
         document.getElementById("managementBackdrop").addEventListener("click", event => {
             if (event.target.id === "managementBackdrop") closeManagement();
         });
         document.getElementById("clearMessages").addEventListener("click", () => {
-            if (!messages.length || !window.confirm("¿Borrar todos los mensajes de este navegador? Esta acción no se puede deshacer.")) return;
-            messages.splice(0);
-            editingIndex = null;
-            saveMessages();
-            renderOrnaments();
-            renderManagement();
-            showToast("Se borraron todos los mensajes.");
+            if (!adminMessages.length || !window.confirm("¿Borrar todos los mensajes y datos privados de Firebase? Esta acción no se puede deshacer.")) return;
+            update(ref(database), {
+                publicWishes: null,
+                privateParticipants: null,
+            })
+                .then(async () => {
+                    editingIndex = null;
+                    await refreshAdminMessages();
+                    showToast("Se borraron todos los mensajes.");
+                })
+                .catch(error => {
+                    console.error("No se pudo vaciar el árbol:", error);
+                    showToast("No se pudo vaciar el árbol.");
+                });
         });
         document.getElementById("exportButton").addEventListener("click", () => {
             const headers = ["Cedula/ID", "Nombre y apellido", "Tipo de participante", "Carrera", "Periodo", "Area", "Mensaje", "Fecha de envio"];
@@ -595,8 +696,8 @@
             };
             const rows = [
                 headers,
-                ...messages.map(message => [
-                    message.participantId || message.id,
+                ...adminMessages.map(message => [
+                    message.participantId,
                     message.name,
                     message.roleLabel || roleLabels[message.rol] || "",
                     message.career || message.carrera,
@@ -610,10 +711,10 @@
             const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
             const link = document.createElement("a");
             link.href = url;
-            link.download = "respaldo-local-arbol-de-los-deseos.csv";
+            link.download = "respaldo-privado-arbol-de-los-deseos.csv";
             link.click();
             setTimeout(() => URL.revokeObjectURL(url), 1000);
-            showToast(`Se descargó el respaldo CSV con ${messages.length} mensajes.`);
+            showToast(`Se descargó el respaldo privado con ${adminMessages.length} mensajes.`);
         });
         document.getElementById("presentationButton").addEventListener("click", async () => {
             document.body.classList.toggle("presentation");
