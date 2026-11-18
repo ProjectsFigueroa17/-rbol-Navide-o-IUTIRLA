@@ -100,6 +100,7 @@
             margin-top: 8px;
             line-height: 1.5;
         }
+        .field-hint { color: var(--muted); font-size: 11px; }
 
         /* Roles Grid */
         .role-section-title {
@@ -361,7 +362,7 @@
         <div class="success-overlay" id="successScreen">
             <div class="success-icon" aria-hidden="true"></div>
             <h2>Mensaje recibido</h2>
-            <p id="successMessageDetail">Tu mensaje quedó guardado en este navegador y aparecerá en el árbol cuando esté abierto desde la misma dirección local.</p>
+            <p id="successMessageDetail">Tu deseo se guardó de forma segura. En el árbol público aparecerá sin tu cédula ni tu nombre real.</p>
             <button class="btn-restart" id="btnRestart" type="button">Enviar otro mensaje</button>
         </div>
 
@@ -369,7 +370,7 @@
             <img src="iutirla.png" alt="IUTIRLA Guayana" onerror="this.style.display='none'">
             <div class="eyebrow">Expoferia IUTIRLA Guayana</div>
             <h1>El Árbol de los Deseos</h1>
-            <p class="subheading">Deja un mensaje para nuestra comunidad institucional y sé parte del árbol navideño.</p>
+            <p class="subheading">Tu nombre y cédula se guardan por separado del deseo y solo la administración autorizada puede consultarlos. El deseo aparecerá anónimamente. Validamos el formato de la cédula, pero no podemos verificar su existencia ni garantizar que se detecten duplicados.</p>
         </header>
 
         <div class="alert-box alert-danger" id="alertBox"></div>
@@ -409,8 +410,9 @@
                 </div>
             </div>
             <div class="form-group">
-                <label for="identificacion">Cédula o ID institucional <span class="req">*</span></label>
-                <input type="text" id="identificacion" name="identificacion" placeholder="Ej. V-12345678" required maxlength="40" autocomplete="off">
+                <label for="identificacion">Cédula venezolana <span class="req">*</span></label>
+                <input type="text" id="identificacion" name="identificacion" placeholder="Ej. 17.459.857" required maxlength="16" autocomplete="off" aria-describedby="identificacionHelp">
+                <small class="field-hint" id="identificacionHelp">Escribe entre 6 y 9 dígitos, con o sin puntos; el prefijo V- o E- es opcional.</small>
             </div>
 
             <!-- Campos Condicionales: Estudiante -->
@@ -427,7 +429,7 @@
                             <option value="Diseño Gráfico">Diseño Gráfico</option>
                             <option value="Publicidad y Mercadeo">Publicidad y Mercadeo</option>
                             <option value="Ciencias Audio Visuales">Ciencias Audio Visuales</option>
-                            <option value="Educacion Inicial">Educacion Inicial</option>
+                            <option value="Educacion Inicial">Educacion Inicial</option>    
                         </select>
                     </div>
                     <div class="form-group">
@@ -468,16 +470,10 @@
         </form>
     </main>
 
-    <!-- Modo local para probar el formulario y el árbol en el mismo navegador. -->
-    <script>
-        const STORAGE_KEY = "iutirla-arbol-deseos-v1";
+    <script type="module">
+        import { get, ref, update } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js";
+        import { database, COLLECTION_NAME } from "./firebase-config.js";
         const CAPACITY = 100;
-        const ROLE_LABELS = {
-            estudiante: "Estudiante",
-            docente: "Docente",
-            directivo: "Directivo / Coordinación",
-            invitado: "Invitado",
-        };
         // Filtro de términos restringidos
         const RESTRICTED_TERMS = [
             "bastardo", "cabron", "carajo", "chingar", "cojones", "culero",
@@ -492,6 +488,13 @@
 
         function normalized(value) {
             return String(value || "").normalize("NFD").replace(/[\u0300-\u036f]/g, "").trim().toLowerCase();
+        }
+
+        function normalizeParticipantId(value) {
+            const number = String(value || "").trim().replace(/^[VE]\s*-?\s*/i, "");
+            if (!/^(?:\d{6,9}|\d{1,3}(?:\.\d{3}){1,2})$/.test(number)) return "";
+            const digits = number.replace(/\D/g, "");
+            return digits.length >= 6 && digits.length <= 9 ? digits : "";
         }
 
         function hasRestrictedLanguage(text) {
@@ -546,34 +549,6 @@
             alertBox.style.display = "none";
         }
 
-        function normalizeParticipantId(value) {
-            return normalized(value).replace(/[^a-z0-9]/g, "");
-        }
-
-        async function saveMessageOnce(payload) {
-            const save = () => {
-                const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
-                if (!Array.isArray(saved)) {
-                    throw new Error("El registro local de mensajes no tiene un formato válido.");
-                }
-                if (saved.some(message => normalizeParticipantId(message.participantId || message.id) === payload.participantIdKey)) {
-                    return false;
-                }
-                if (saved.length >= CAPACITY) {
-                    throw new Error("El árbol alcanzó su capacidad de mensajes.");
-                }
-                const message = { ...payload };
-                delete message.participantIdKey;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify([...saved, message]));
-                return true;
-            };
-
-            if (navigator.locks) {
-                return navigator.locks.request(`${STORAGE_KEY}:participant-id`, save);
-            }
-            return save();
-        }
-
         // Envío del Formulario
         form.addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -582,11 +557,16 @@
             const nombre = document.getElementById("nombre").value.trim();
             const apellido = document.getElementById("apellido").value.trim();
             const participantId = document.getElementById("identificacion").value.trim();
-            const participantIdKey = normalizeParticipantId(participantId);
             const mensaje = mensajeInput.value.trim();
 
-            if (!nombre || !apellido || !participantIdKey || !mensaje) {
-                showAlert("Por favor completa tu nombre, apellido, cédula o ID y mensaje.");
+            if (!nombre || !apellido || !participantId || !mensaje) {
+                showAlert("Por favor completa tu nombre, apellido, cédula y mensaje.");
+                return;
+            }
+            const normalizedId = normalizeParticipantId(participantId);
+            if (!normalizedId) {
+                showAlert("Formato de cédula inválido. Usa 17.459.857 o V-17.459.857.");
+                document.getElementById("identificacion").focus();
                 return;
             }
 
@@ -616,45 +596,64 @@
                 return;
             }
 
-            // Asignación de esfera para la prueba local.
             const esferaColor = Math.random() > 0.5 ? "ballGold" : "ballRed";
 
             const payload = {
-                id: crypto.randomUUID(),
-                participantId,
-                participantIdKey,
+                participantId: normalizedId,
                 rol: currentRole,
-                roleLabel: ROLE_LABELS[currentRole],
                 name: `${nombre} ${apellido}`,
                 career: currentRole === "estudiante" ? carrera : "",
                 periodo: currentRole === "estudiante" ? periodo : "",
                 area: currentRole === "directivo" ? area : "",
                 text: mensaje,
                 esferaColor,
-                timestamp: new Date().toISOString(),
-                createdAtClient: new Date().toISOString()
             };
 
             submitBtn.disabled = true;
             submitBtn.innerHTML = `<span>Guardando mensaje...</span>`;
 
             try {
-                const wasSaved = await saveMessageOnce(payload);
-                if (!wasSaved) {
-                    showAlert("Ya existe un mensaje enviado con esta cédula o ID. Cada persona puede enviar un solo mensaje.");
+                const wishesSnapshot = await get(ref(database, COLLECTION_NAME));
+                const savedWishes = wishesSnapshot.exists() ? wishesSnapshot.val() : {};
+                if (Object.keys(savedWishes).length >= CAPACITY) {
+                    showAlert("El árbol alcanzó su capacidad de mensajes.");
                     return;
                 }
-
-                // Confirmar únicamente cuando el navegador haya guardado el mensaje.
+                const wishKey = Array.from({ length: CAPACITY }, (_, index) => String(index))
+                    .find(key => !Object.prototype.hasOwnProperty.call(savedWishes, key));
+                if (wishKey === undefined) {
+                    showAlert("El árbol alcanzó su capacidad de mensajes.");
+                    return;
+                }
+                const timestamp = Date.now();
+                await update(ref(database), {
+                    [`${COLLECTION_NAME}/${wishKey}`]: {
+                        name: "Integrante de la comunidad",
+                        text: payload.text,
+                        esferaColor: payload.esferaColor,
+                        timestamp,
+                    },
+                    [`privateParticipants/${wishKey}`]: {
+                        participantId: payload.participantId,
+                        rol: payload.rol,
+                        name: payload.name,
+                        career: payload.career,
+                        periodo: payload.periodo,
+                        area: payload.area,
+                        timestamp,
+                    },
+                });
                 successScreen.style.display = "flex";
                 form.reset();
                 selectRole("estudiante");
                 charCounter.textContent = "0 / 300";
             } catch (err) {
-                console.error("No se pudo guardar el deseo localmente:", err);
-                showAlert(err.message === "El árbol alcanzó su capacidad de mensajes."
-                    ? err.message
-                    : "No se pudo guardar el mensaje en este navegador. El envío no se confirmó; inténtalo de nuevo.");
+                console.error("No se pudo guardar el deseo en Firebase:", err);
+                const errorCode = String(err.code || "").toLowerCase().replace(/_/g, "-");
+                const message = errorCode.includes("permission-denied")
+                    ? "Firebase rechazó el envío. Puede que otra persona haya ocupado ese espacio; intenta de nuevo. Si continúa, revisa las reglas y App Check."
+                    : "No se pudo guardar el mensaje. Inténtalo de nuevo más tarde.";
+                showAlert(message);
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.innerHTML = `<span>Enviar mi deseo al árbol</span>`;
